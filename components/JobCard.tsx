@@ -75,7 +75,7 @@ export default function BountyCard({ job, userRole, currentUserId, onOpenDetail 
         {/* Metadata */}
         <div className="flex flex-wrap items-center gap-4 text-sm mb-4">
           <div className="flex items-center gap-1.5">
-            <DollarSign size={16} className="shrink-0 text-emerald-400" />
+            <DollarSign size={16} className="shrink-0 text-white" />
             <span className="font-bold text-white">{job.bounty}</span>
           </div>
 
@@ -104,7 +104,7 @@ export default function BountyCard({ job, userRole, currentUserId, onOpenDetail 
             {job.requirements.slice(0, 3).map((req, idx) => (
               <span 
                 key={idx} 
-                className="px-2 py-1 rounded-md bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium"
+                className="px-2 py-1 rounded-md bg-cyan-500/10 border border-cyan-500/20 text-white text-xs font-medium"
               >
                 {req}
               </span>
