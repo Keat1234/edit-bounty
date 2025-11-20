@@ -1,0 +1,88 @@
+@layer theme, base, frosted_ui, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "@whop/react/styles.css" layer(frosted_ui);
+
+/* biome-ignore lint/suspicious/noUnknownAtRules: this rule is imported from whop */
+@config '../tailwind.config.ts';
+
+@layer theme {
+	:root {
+		/* Dark slate theme colors */
+		--slate-950: oklch(0.129 0.042 264.695);
+		--slate-900: oklch(0.208 0.042 265.755);
+		--slate-800: oklch(0.279 0.041 260.031);
+		--slate-700: oklch(0.372 0.044 257.287);
+		--slate-600: oklch(0.446 0.043 257.281);
+		--slate-500: oklch(0.554 0.046 257.417);
+		--slate-400: oklch(0.704 0.04 256.788);
+		--slate-300: oklch(0.869 0.022 252.894);
+		--slate-200: oklch(0.929 0.013 255.508);
+		--slate-100: oklch(0.968 0.007 247.896);
+		
+		/* Cyan/blue accents */
+		--cyan-300: oklch(0.865 0.127 207.078);
+		--cyan-400: oklch(0.789 0.154 211.53);
+		--cyan-500: oklch(0.715 0.143 215.221);
+		--cyan-600: oklch(0.609 0.126 221.723);
+		--blue-400: oklch(0.707 0.165 254.624);
+		--blue-500: oklch(0.623 0.214 259.815);
+		--blue-600: oklch(0.546 0.245 262.881);
+		
+		/* Glassmorphism */
+		--glass-bg: rgba(15, 23, 42, 0.5);
+		--glass-border: rgba(148, 163, 184, 0.1);
+	}
+}
+
+body {
+	background: var(--background);
+	color: var(--foreground);
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Scrollbar styling for dark theme */
+::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+
+::-webkit-scrollbar-track {
+	background: rgba(15, 23, 42, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+	background: rgba(148, 163, 184, 0.3);
+	border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: rgba(148, 163, 184, 0.5);
+}
+
+/* Animation utilities */
+@keyframes enter {
+	from {
+		opacity: 0;
+		transform: scale(0.95);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+.animate-in {
+	animation: enter 0.2s ease-out;
+}
+
+/* Backdrop blur utility */
+.backdrop-blur-sm {
+	backdrop-filter: blur(8px);
+}
+
+.backdrop-blur-md {
+	backdrop-filter: blur(12px);
+}
