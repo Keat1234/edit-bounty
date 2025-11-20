@@ -175,7 +175,7 @@ export default function ClientDashboard({
                       key={job.id} 
                       job={job} 
                       userRole={userRole} 
-                      currentUserId={userRole === 'CREATOR' ? 'creator-1' : 'editor-1'}
+                      currentUserId="editor-1"
                       onOpenDetail={setSelectedBounty}
                     />
                   ))}
