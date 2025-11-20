@@ -160,7 +160,7 @@ export function BountyDetailModal({ bounty, userRole, currentUserId, onClose, on
                 {bounty.requirements.map((req, index) => (
                   <span
                     key={index}
-                    className="px-4 py-2 bg-cyan-500/10 border border-cyan-500/20 rounded-lg text-cyan-400 text-sm font-medium"
+                    className="px-4 py-2 bg-cyan-500/10 border border-cyan-500/20 rounded-lg text-white text-sm font-medium"
                   >
                     {req}
                   </span>

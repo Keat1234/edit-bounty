@@ -76,7 +76,7 @@ export default function BountyCard({ job, userRole, currentUserId, onOpenDetail 
         <div className="flex flex-wrap items-center gap-4 text-sm mb-4">
           <div className="flex items-center gap-1.5">
             <DollarSign size={16} className="shrink-0 text-emerald-400" />
-            <span className="font-bold text-white">${job.bounty}</span>
+            <span className="font-bold text-white">{job.bounty}</span>
           </div>
 
           {job.deadline && (
