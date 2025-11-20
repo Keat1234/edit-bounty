@@ -37,6 +37,11 @@ yarn-error.log*
 # local data
 jobs.json
 
+# design files
+Bounty Board UI Design/
+*.figma
+*.sketch
+
 # vercel
 .vercel
 
