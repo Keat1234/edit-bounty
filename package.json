@@ -39,6 +39,7 @@
 		"@radix-ui/react-toolbar": "^1.1.11",
 		"@radix-ui/react-tooltip": "^1.2.8",
 		"@vercel/functions": "^3.1.4",
+		"@vercel/postgres": "^0.10.0",
 		"@whop/react": "0.3.0",
 		"@whop/sdk": "0.0.3",
 		"lucide-react": "^0.554.0",

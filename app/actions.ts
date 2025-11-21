@@ -5,7 +5,7 @@ import { Job } from '@/lib/types';
 import { revalidatePath } from 'next/cache';
 
 export async function getJobsAction() {
-  return getJobs();
+  return await getJobs();
 }
 
 export async function createJobAction(data: {
@@ -19,7 +19,7 @@ export async function createJobAction(data: {
   requirements?: string[];
   longDescription?: string;
 }) {
-  createJob({
+  await createJob({
     ...data,
     editorId: null,
     status: 'OPEN',
@@ -34,20 +34,20 @@ export async function createJobAction(data: {
 }
 
 export async function claimJobAction(jobId: string, editorId: string) {
-  updateJobStatus(jobId, 'CLAIMED', editorId);
+  await updateJobStatus(jobId, 'CLAIMED', editorId);
   revalidatePath('/');
   revalidatePath('/editor');
 }
 
 export async function submitJobAction(jobId: string, submissionUrl: string) {
-  updateJobStatus(jobId, 'SUBMITTED', undefined, submissionUrl);
+  await updateJobStatus(jobId, 'SUBMITTED', undefined, submissionUrl);
   revalidatePath('/');
   revalidatePath('/editor');
   revalidatePath('/creator');
 }
 
 export async function approveJobAction(jobId: string) {
-  updateJobStatus(jobId, 'APPROVED');
+  await updateJobStatus(jobId, 'APPROVED');
   revalidatePath('/');
   revalidatePath('/creator');
 }

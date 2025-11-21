@@ -1,10 +1,10 @@
 import { Job } from './types';
-import fs from 'fs';
-import path from 'path';
+import * as db from './db/queries';
 
-const DB_PATH = path.join(process.cwd(), 'jobs.json');
+// Check if we have database connection
+const USE_DATABASE = !!process.env.POSTGRES_URL;
 
-// Initial mock data
+// In-memory fallback for local development without database
 const INITIAL_JOBS: Job[] = [
   {
     id: '1',
@@ -76,67 +76,103 @@ const INITIAL_JOBS: Job[] = [
   },
 ];
 
-// In-memory cache for Vercel/Serverless environments where filesystem is read-only
 let memoryJobs: Job[] = [...INITIAL_JOBS];
 
-const readJobs = (): Job[] => {
-  try {
-    if (fs.existsSync(DB_PATH)) {
-      const data = fs.readFileSync(DB_PATH, 'utf-8');
-      memoryJobs = JSON.parse(data);
+// Public API functions that route to either database or memory
+export const getJobs = async (): Promise<Job[]> => {
+  if (USE_DATABASE) {
+    try {
+      return await db.getJobs();
+    } catch (error) {
+      console.error('Database error, falling back to memory:', error);
       return memoryJobs;
     }
-  } catch (error) {
-    // Ignore file read errors and return memory/initial data
   }
   return memoryJobs;
 };
 
-const writeJobs = (jobs: Job[]) => {
-  memoryJobs = jobs; // Always update memory
-  try {
-    fs.writeFileSync(DB_PATH, JSON.stringify(jobs, null, 2));
-  } catch (error) {
-    // Ignore file write errors in read-only environments (Vercel)
-    console.warn('Could not write to file system (expected in Vercel), using in-memory storage');
+export const getJobById = async (id: string): Promise<Job | undefined> => {
+  if (USE_DATABASE) {
+    try {
+      const job = await db.getJobById(id);
+      return job || undefined;
+    } catch (error) {
+      console.error('Database error, falling back to memory:', error);
+      return memoryJobs.find(j => j.id === id);
+    }
   }
+  return memoryJobs.find(j => j.id === id);
 };
 
-// Try to initialize DB file if possible, but don't crash if not
-try {
-  if (!fs.existsSync(DB_PATH)) {
-    writeJobs(INITIAL_JOBS);
+export const createJob = async (job: Omit<Job, 'id'>): Promise<Job> => {
+  if (USE_DATABASE) {
+    try {
+      return await db.createJob({
+        creatorId: job.creatorId,
+        title: job.title,
+        description: job.description,
+        bounty: job.bounty,
+        videoUrl: job.videoUrl || undefined,
+        type: job.type,
+        deadline: job.deadline,
+        requirements: job.requirements,
+        longDescription: job.longDescription,
+      });
+    } catch (error) {
+      console.error('Database error, falling back to memory:', error);
+      // Fallback to memory
+      const newJob: Job = {
+        ...job,
+        id: Math.random().toString(36).substring(7),
+      };
+      memoryJobs.push(newJob);
+      return newJob;
+    }
   }
-} catch (e) {
-  // Ignore init errors
-}
-
-export const getJobs = () => readJobs();
-
-export const getJobById = (id: string) => readJobs().find((j) => j.id === id);
-
-export const createJob = (job: Omit<Job, 'id'>) => {
-  const jobs = readJobs();
+  
+  // Memory fallback
   const newJob: Job = {
     ...job,
     id: Math.random().toString(36).substring(7),
   };
-  jobs.push(newJob);
-  writeJobs(jobs);
+  memoryJobs.push(newJob);
   return newJob;
 };
 
-export const updateJobStatus = (id: string, status: Job['status'], editorId?: string, submissionUrl?: string) => {
-  const jobs = readJobs();
-  const jobIndex = jobs.findIndex((j) => j.id === id);
+export const updateJobStatus = async (
+  id: string,
+  status: Job['status'],
+  editorId?: string,
+  submissionUrl?: string
+): Promise<Job | null> => {
+  if (USE_DATABASE) {
+    try {
+      return await db.updateJobStatus(id, status, editorId, submissionUrl);
+    } catch (error) {
+      console.error('Database error, falling back to memory:', error);
+      // Fallback to memory
+      const jobIndex = memoryJobs.findIndex(j => j.id === id);
+      if (jobIndex === -1) return null;
+      
+      const job = memoryJobs[jobIndex];
+      job.status = status;
+      if (editorId !== undefined) job.editorId = editorId;
+      if (submissionUrl !== undefined) job.submissionUrl = submissionUrl;
+      
+      memoryJobs[jobIndex] = job;
+      return job;
+    }
+  }
+  
+  // Memory fallback
+  const jobIndex = memoryJobs.findIndex(j => j.id === id);
   if (jobIndex === -1) return null;
-
-  const job = jobs[jobIndex];
+  
+  const job = memoryJobs[jobIndex];
   job.status = status;
   if (editorId !== undefined) job.editorId = editorId;
   if (submissionUrl !== undefined) job.submissionUrl = submissionUrl;
   
-  jobs[jobIndex] = job;
-  writeJobs(jobs);
+  memoryJobs[jobIndex] = job;
   return job;
 };

@@ -40,7 +40,7 @@ export default async function ExperiencePage({
 	const role = (search['role'] as string) || 'editor';
 	
 	// Get all jobs for display
-	const allJobs = getJobs();
+	const allJobs = await getJobs();
 	const openJobs = allJobs.filter(j => j.status === 'OPEN');
 	const myCreatorJobs = allJobs.filter(j => j.creatorId === 'creator-1');
 	const myEditorJobs = allJobs.filter(j => j.editorId === 'editor-1');
